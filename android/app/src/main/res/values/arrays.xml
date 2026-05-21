@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pin_mode_entries">
+        <item>Numeric PIN</item>
+        <item>Alphanumeric password</item>
+    </string-array>
+    <string-array name="pin_mode_values">
+        <item>numeric</item>
+        <item>alphanumeric</item>
+    </string-array>
+    <string-array name="display_mode_entries">
+        <item>Website (WebView)</item>
+        <item>External app</item>
+        <item>Media player</item>
+    </string-array>
+    <string-array name="display_mode_values">
+        <item>webview</item>
+        <item>external_app</item>
+        <item>media_player</item>
+    </string-array>
+</resources>

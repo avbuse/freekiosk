@@ -667,6 +667,7 @@ adb shell pm clear com.freekiosk
 
 
 - [REST API Documentation](REST-API) - Remote control via HTTP
+- [Intune Managed Configuration](intune-managed-configuration.md) - Push settings via Intune app configuration policies
 - [MDM Specification](MDM-SPEC) - Enterprise deployment
 - [Installation Guide](Installation) - Manual setup instructions
 

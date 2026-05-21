@@ -1369,6 +1369,19 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
         console.log('[KioskScreen] No pending ADB config or error:', pendingError);
       }
 
+      // Apply MDM / Intune managed app configuration (Android Enterprise app restrictions)
+      try {
+        const managedConfig = await getManagedConfiguration();
+        if (managedConfig) {
+          const result = await applyManagedConfiguration(managedConfig);
+          if (result.applied) {
+            console.log('[KioskScreen] Applied managed configuration from MDM:', result.keys.join(', '));
+          }
+        }
+      } catch (managedError) {
+        console.log('[KioskScreen] Managed config read skipped:', managedError);
+      }
+
       // Batch load ALL settings in a single multiGet call (1 bridge crossing instead of 50+)
       const settings = await StorageService.getAllSettings();
       const K = StorageService.KEYS;

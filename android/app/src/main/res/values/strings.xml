@@ -2,4 +2,19 @@
     <string name="app_name">FreeKiosk</string>
     <string name="accessibility_service_description">FreeKiosk uses this service to send keyboard input and remote control commands to apps running on this device. This is required for the REST API remote control feature to work in external app mode.</string>
     <string name="boot_loading">Starting kiosk…</string>
+
+    <string name="managed_config_url_title">Kiosk URL</string>
+    <string name="managed_config_url_desc">Web page URL for WebView mode (e.g. Home Assistant dashboard)</string>
+    <string name="managed_config_kiosk_enabled_title">Enable lock mode</string>
+    <string name="managed_config_kiosk_enabled_desc">Lock the device to kiosk mode (lock task)</string>
+    <string name="managed_config_auto_launch_title">Launch on boot</string>
+    <string name="managed_config_auto_launch_desc">Automatically start FreeKiosk when the device boots</string>
+    <string name="managed_config_pin_mode_title">PIN mode</string>
+    <string name="managed_config_pin_mode_desc">numeric = digits only; alphanumeric = letters, numbers, and symbols (up to 20 characters)</string>
+    <string name="managed_config_display_mode_title">Display mode</string>
+    <string name="managed_config_display_mode_desc">webview, external_app, or media_player</string>
+    <string name="managed_config_lock_package_title">External app package</string>
+    <string name="managed_config_lock_package_desc">Package name when display_mode is external_app (e.g. com.example.app)</string>
+    <string name="managed_config_pin_title">Initial PIN/password (optional)</string>
+    <string name="managed_config_pin_desc">Sets PIN on apply only if no PIN is configured yet. Not recommended for production — prefer ADB provisioning for secrets.</string>
 </resources>

@@ -88,6 +88,7 @@ adb shell dpm set-device-owner com.freekiosk/.DeviceAdminReceiver
 | **REST API** | 40+ HTTP endpoints for device control | [Read →](REST-API) |
 | **MQTT** | Real-time telemetry and Home Assistant discovery | [Read →](MQTT) |
 | **ADB Configuration** | Headless provisioning and scripting | [Read →](ADB-Configuration) |
+| **Intune Managed Configuration** | Push kiosk settings via Intune app policies | [Read →](intune-managed-configuration) |
 
 ### Advanced Topics
 

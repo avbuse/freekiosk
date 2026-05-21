@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <restriction
+        android:key="url"
+        android:title="@string/managed_config_url_title"
+        android:description="@string/managed_config_url_desc"
+        android:restrictionType="string"
+        android:defaultValue="http://homeassistant.local:8123" />
+
+    <restriction
+        android:key="kiosk_enabled"
+        android:title="@string/managed_config_kiosk_enabled_title"
+        android:description="@string/managed_config_kiosk_enabled_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="auto_launch"
+        android:title="@string/managed_config_auto_launch_title"
+        android:description="@string/managed_config_auto_launch_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="pin_mode"
+        android:title="@string/managed_config_pin_mode_title"
+        android:description="@string/managed_config_pin_mode_desc"
+        android:restrictionType="choice"
+        android:entries="@array/pin_mode_entries"
+        android:entryValues="@array/pin_mode_values"
+        android:defaultValue="alphanumeric" />
+
+    <restriction
+        android:key="display_mode"
+        android:title="@string/managed_config_display_mode_title"
+        android:description="@string/managed_config_display_mode_desc"
+        android:restrictionType="choice"
+        android:entries="@array/display_mode_entries"
+        android:entryValues="@array/display_mode_values"
+        android:defaultValue="webview" />
+
+    <restriction
+        android:key="lock_package"
+        android:title="@string/managed_config_lock_package_title"
+        android:description="@string/managed_config_lock_package_desc"
+        android:restrictionType="string" />
+
+    <restriction
+        android:key="pin"
+        android:title="@string/managed_config_pin_title"
+        android:description="@string/managed_config_pin_desc"
+        android:restrictionType="string" />
+
+</restrictions>

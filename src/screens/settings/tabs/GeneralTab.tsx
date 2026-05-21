@@ -838,8 +838,8 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
             : isPinConfigured
               ? '✓ Password configured - Leave empty to keep current password'
               : pinMode === 'alphanumeric'
-                ? 'Minimum 4 characters. Can include letters, numbers, and special characters.'
-                : 'Numeric PIN: 4-6 digits (default: 1234)'}
+                ? `${MIN_PIN_LENGTH}-${getMaxPinLength('alphanumeric')} characters. Letters, numbers, and special characters.`
+                : `Numeric PIN: ${MIN_PIN_LENGTH}-${getMaxPinLength('numeric')} digits (default: 1234)`}
         />
         
         <View style={styles.pinAttemptsContainer}>

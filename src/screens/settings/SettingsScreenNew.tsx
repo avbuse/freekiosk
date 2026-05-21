@@ -1136,16 +1136,20 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
     }
     
     if (pin && pin.length > 0) {
-      if (pin.length < 4) {
-        Alert.alert('Error', 'Password must be at least 4 characters');
+      if (pin.length < MIN_PIN_LENGTH) {
+        Alert.alert('Error', `Password must be at least ${MIN_PIN_LENGTH} characters`);
         return;
       }
       if (pinMode === 'numeric' && !/^\d+$/.test(pin)) {
         Alert.alert('Error', 'In numeric PIN mode, only digits (0-9) are allowed. Enable "Advanced Password Mode" to use letters and special characters.');
         return;
       }
-      if (pinMode === 'numeric' && pin.length > 6) {
-        Alert.alert('Error', 'Numeric PIN must be 4-6 digits. Enable "Advanced Password Mode" for longer passwords.');
+      if (pinMode === 'numeric' && pin.length > MAX_NUMERIC_PIN_LENGTH) {
+        Alert.alert('Error', `Numeric PIN must be ${MIN_PIN_LENGTH}-${MAX_NUMERIC_PIN_LENGTH} digits. Enable "Advanced Password Mode" for longer passwords.`);
+        return;
+      }
+      if (pinMode === 'alphanumeric' && pin.length > MAX_ALPHANUMERIC_PIN_LENGTH) {
+        Alert.alert('Error', `Password must be at most ${MAX_ALPHANUMERIC_PIN_LENGTH} characters`);
         return;
       }
     } else if (!isPinConfigured && !pin) {

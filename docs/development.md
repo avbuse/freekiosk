@@ -97,18 +97,38 @@ npx react-native run-android --device <device_id>
 
 ## Build Release APK
 
-
+**Recommended (handles SDK path and Gradle memory):**
 
 ```bash
-# Navigate to Android directory
-cd android
-
-# Build release APK
-./gradlew assembleRelease
-
-# Build release AAB (for Play Store)
-./gradlew assembleBundle
+npm install
+export ANDROID_HOME=$HOME/Android/Sdk   # or your SDK path (Android Studio default)
+npm run build:apk
 ```
+
+**Manual:**
+
+```bash
+npm install
+echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+cp android/gradle.properties.template android/gradle.properties   # first time only
+cd android && ./gradlew assembleRelease
+```
+
+**Play Store AAB:**
+
+```bash
+cd android && ./gradlew bundleRelease -Pplaystore
+```
+
+### Build troubleshooting
+
+| Error | Fix |
+|-------|-----|
+| `SDK location not found` | Set `ANDROID_HOME` and create `android/local.properties` with `sdk.dir=...` (see `scripts/build-apk.sh`) |
+| `Gradle build daemon ... garbage collector is thrashing` | Copy `android/gradle.properties.template` to `android/gradle.properties` (needs ~4GB heap) |
+| `npm install` / patch failures | Run from repo root: `npm install` |
+| Missing SDK packages | Install via SDK Manager: platform 36, build-tools 36.0.0, NDK 27.1.12297006 |
+| First build very slow | Normal; downloads dependencies and compiles native code (~5–15 min) |
 
 
 

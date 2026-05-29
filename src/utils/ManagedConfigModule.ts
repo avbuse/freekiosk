@@ -1,14 +1,7 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { MANAGED_CONFIG_ALL_KEYS, type ManagedConfigKey } from '../constants/managedConfigRegistry';
 
-export interface ManagedConfigurationMap {
-  url?: string;
-  kiosk_enabled?: boolean;
-  auto_launch?: boolean;
-  pin_mode?: string;
-  display_mode?: string;
-  lock_package?: string;
-  pin?: string;
-}
+export type ManagedConfigurationMap = Partial<Record<ManagedConfigKey | string, string | boolean>>;
 
 interface ManagedConfigModuleInterface {
   getManagedConfiguration(): Promise<ManagedConfigurationMap>;
@@ -24,6 +17,9 @@ export const managedConfigEmitter =
     : null;
 
 export const MANAGED_CONFIG_CHANGED_EVENT = 'onManagedConfigurationChanged';
+
+/** Keys declared in app_restrictions.xml (for docs and tooling). */
+export const MANAGED_CONFIG_POLICY_KEYS = MANAGED_CONFIG_ALL_KEYS;
 
 export async function getManagedConfiguration(): Promise<ManagedConfigurationMap | null> {
   if (Platform.OS !== 'android' || !ManagedConfigModule) {

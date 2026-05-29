@@ -28,7 +28,12 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import Icon from '../components/Icon';
 import { revokeSettingsAccess } from '../utils/authState';
-import { getManagedConfiguration } from '../utils/ManagedConfigModule';
+import {
+  getManagedConfiguration,
+  managedConfigEmitter,
+  MANAGED_CONFIG_CHANGED_EVENT,
+  type ManagedConfigurationMap,
+} from '../utils/ManagedConfigModule';
 import { applyManagedConfiguration } from '../utils/managedConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -1877,6 +1882,32 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
       console.error('[KioskScreen] loadSettings error:', error);
     }
   };
+
+  const loadSettingsRef = useRef(loadSettings);
+  loadSettingsRef.current = loadSettings;
+
+  // Re-apply settings when Intune/MDM pushes an updated app configuration policy
+  useEffect(() => {
+    if (!managedConfigEmitter) return;
+    const subscription = managedConfigEmitter.addListener(
+      MANAGED_CONFIG_CHANGED_EVENT,
+      async (config: ManagedConfigurationMap) => {
+        try {
+          const result = await applyManagedConfiguration(config);
+          if (result.applied) {
+            console.log(
+              '[KioskScreen] MDM policy updated, reloading settings:',
+              result.keys.join(', '),
+            );
+            await loadSettingsRef.current();
+          }
+        } catch (error) {
+          console.log('[KioskScreen] Managed config change handler error:', error);
+        }
+      },
+    );
+    return () => subscription.remove();
+  }, []);
 
   const resetTimer = () => {
     clearTimer();

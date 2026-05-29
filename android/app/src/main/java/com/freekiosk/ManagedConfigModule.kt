@@ -19,6 +19,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 /**
  * Reads Android managed app configuration (app restrictions) pushed by MDM tools
  * such as Microsoft Intune on enrolled Android Enterprise devices.
+ *
+ * Keep KNOWN_KEYS / BOOL_KEYS in sync with src/constants/managedConfigRegistry.ts
  */
 class ManagedConfigModule(private val reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
@@ -27,15 +29,49 @@ class ManagedConfigModule(private val reactContext: ReactApplicationContext) :
         const val NAME = "ManagedConfigModule"
         const val EVENT_CONFIGURATION_CHANGED = "onManagedConfigurationChanged"
 
-        private val KNOWN_KEYS = listOf(
-            "url",
+        private val BOOL_KEYS = setOf(
             "kiosk_enabled",
             "auto_launch",
+            "auto_relaunch",
+            "allow_power_button",
+            "allow_notifications",
+            "allow_system_info",
+            "keep_screen_on",
+            "volume_up_5tap_enabled",
+            "auto_reload",
+            "status_bar_enabled",
+            "status_bar_show_battery",
+            "status_bar_show_wifi",
+            "status_bar_show_bluetooth",
+            "status_bar_show_volume",
+            "status_bar_show_time",
+            "disable_user_zoom",
+            "screensaver_enabled",
+            "screensaver_inactivity_enabled",
+        )
+
+        private val STRING_KEYS = listOf(
+            "url",
             "pin_mode",
             "display_mode",
             "lock_package",
             "pin",
+            "external_app_mode",
+            "managed_apps",
+            "back_button_mode",
+            "return_mode",
+            "keyboard_mode",
+            "custom_user_agent",
+            "return_tap_count",
+            "return_tap_timeout",
+            "pin_max_attempts",
+            "webview_zoom_level",
+            "screensaver_inactivity_delay",
+            "screensaver_type",
+            "screensaver_url",
         )
+
+        val KNOWN_KEYS: List<String> = BOOL_KEYS.toList() + STRING_KEYS
     }
 
     private var restrictionsReceiver: BroadcastReceiver? = null
@@ -84,18 +120,34 @@ class ManagedConfigModule(private val reactContext: ReactApplicationContext) :
         return restrictionsManager.applicationRestrictions ?: Bundle.EMPTY
     }
 
+    private fun readBool(bundle: Bundle, key: String): Boolean? {
+        if (!bundle.containsKey(key)) return null
+        return when (val value = bundle.get(key)) {
+            is Boolean -> value
+            is String -> value.equals("true", ignoreCase = true) || value == "1"
+            is Int -> value != 0
+            else -> null
+        }
+    }
+
+    private fun readString(bundle: Bundle, key: String): String? {
+        if (!bundle.containsKey(key)) return null
+        return when (val value = bundle.get(key)) {
+            is String -> value
+            is Boolean -> value.toString()
+            is Int -> value.toString()
+            else -> value?.toString()
+        }
+    }
+
     private fun bundleToWritableMap(bundle: Bundle): WritableMap {
         val map = Arguments.createMap()
         for (key in KNOWN_KEYS) {
             if (!bundle.containsKey(key)) continue
-            when (key) {
-                "kiosk_enabled", "auto_launch" -> map.putBoolean(key, bundle.getBoolean(key))
-                else -> {
-                    val value = bundle.getString(key)
-                    if (value != null) {
-                        map.putString(key, value)
-                    }
-                }
+            if (key in BOOL_KEYS) {
+                readBool(bundle, key)?.let { map.putBoolean(key, it) }
+            } else {
+                readString(bundle, key)?.let { map.putString(key, it) }
             }
         }
         return map

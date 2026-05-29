@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Sync keys with src/constants/managedConfigRegistry.ts (policy v2) -->
 <restrictions xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- v1 core -->
     <restriction
         android:key="url"
         android:title="@string/managed_config_url_title"
@@ -50,6 +52,220 @@
         android:key="pin"
         android:title="@string/managed_config_pin_title"
         android:description="@string/managed_config_pin_desc"
+        android:restrictionType="string" />
+
+    <!-- v2 tier 1: external app -->
+    <restriction
+        android:key="external_app_mode"
+        android:title="@string/managed_config_external_app_mode_title"
+        android:description="@string/managed_config_external_app_mode_desc"
+        android:restrictionType="choice"
+        android:entries="@array/external_app_mode_entries"
+        android:entryValues="@array/external_app_mode_values"
+        android:defaultValue="single" />
+
+    <restriction
+        android:key="managed_apps"
+        android:title="@string/managed_config_managed_apps_title"
+        android:description="@string/managed_config_managed_apps_desc"
+        android:restrictionType="string" />
+
+    <restriction
+        android:key="auto_relaunch"
+        android:title="@string/managed_config_auto_relaunch_title"
+        android:description="@string/managed_config_auto_relaunch_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="back_button_mode"
+        android:title="@string/managed_config_back_button_mode_title"
+        android:description="@string/managed_config_back_button_mode_desc"
+        android:restrictionType="choice"
+        android:entries="@array/back_button_mode_entries"
+        android:entryValues="@array/back_button_mode_values"
+        android:defaultValue="test" />
+
+    <!-- v2 tier 1: device / kiosk -->
+    <restriction
+        android:key="allow_power_button"
+        android:title="@string/managed_config_allow_power_button_title"
+        android:description="@string/managed_config_allow_power_button_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="allow_notifications"
+        android:title="@string/managed_config_allow_notifications_title"
+        android:description="@string/managed_config_allow_notifications_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="allow_system_info"
+        android:title="@string/managed_config_allow_system_info_title"
+        android:description="@string/managed_config_allow_system_info_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="keep_screen_on"
+        android:title="@string/managed_config_keep_screen_on_title"
+        android:description="@string/managed_config_keep_screen_on_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="pin_max_attempts"
+        android:title="@string/managed_config_pin_max_attempts_title"
+        android:description="@string/managed_config_pin_max_attempts_desc"
+        android:restrictionType="string"
+        android:defaultValue="5" />
+
+    <!-- v2 tier 1: return / escape -->
+    <restriction
+        android:key="return_tap_count"
+        android:title="@string/managed_config_return_tap_count_title"
+        android:description="@string/managed_config_return_tap_count_desc"
+        android:restrictionType="string"
+        android:defaultValue="5" />
+
+    <restriction
+        android:key="return_tap_timeout"
+        android:title="@string/managed_config_return_tap_timeout_title"
+        android:description="@string/managed_config_return_tap_timeout_desc"
+        android:restrictionType="string"
+        android:defaultValue="1500" />
+
+    <restriction
+        android:key="return_mode"
+        android:title="@string/managed_config_return_mode_title"
+        android:description="@string/managed_config_return_mode_desc"
+        android:restrictionType="choice"
+        android:entries="@array/return_mode_entries"
+        android:entryValues="@array/return_mode_values"
+        android:defaultValue="button" />
+
+    <restriction
+        android:key="volume_up_5tap_enabled"
+        android:title="@string/managed_config_volume_up_5tap_title"
+        android:description="@string/managed_config_volume_up_5tap_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <!-- v2 tier 1: webview -->
+    <restriction
+        android:key="auto_reload"
+        android:title="@string/managed_config_auto_reload_title"
+        android:description="@string/managed_config_auto_reload_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="custom_user_agent"
+        android:title="@string/managed_config_custom_user_agent_title"
+        android:description="@string/managed_config_custom_user_agent_desc"
+        android:restrictionType="string" />
+
+    <restriction
+        android:key="webview_zoom_level"
+        android:title="@string/managed_config_webview_zoom_title"
+        android:description="@string/managed_config_webview_zoom_desc"
+        android:restrictionType="string"
+        android:defaultValue="100" />
+
+    <restriction
+        android:key="disable_user_zoom"
+        android:title="@string/managed_config_disable_user_zoom_title"
+        android:description="@string/managed_config_disable_user_zoom_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="keyboard_mode"
+        android:title="@string/managed_config_keyboard_mode_title"
+        android:description="@string/managed_config_keyboard_mode_desc"
+        android:restrictionType="string"
+        android:defaultValue="default" />
+
+    <!-- v2 tier 1: status bar -->
+    <restriction
+        android:key="status_bar_enabled"
+        android:title="@string/managed_config_status_bar_title"
+        android:description="@string/managed_config_status_bar_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="status_bar_show_battery"
+        android:title="@string/managed_config_status_bar_battery_title"
+        android:description="@string/managed_config_status_bar_item_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="status_bar_show_wifi"
+        android:title="@string/managed_config_status_bar_wifi_title"
+        android:description="@string/managed_config_status_bar_item_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="status_bar_show_bluetooth"
+        android:title="@string/managed_config_status_bar_bluetooth_title"
+        android:description="@string/managed_config_status_bar_item_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="status_bar_show_volume"
+        android:title="@string/managed_config_status_bar_volume_title"
+        android:description="@string/managed_config_status_bar_item_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="status_bar_show_time"
+        android:title="@string/managed_config_status_bar_time_title"
+        android:description="@string/managed_config_status_bar_item_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <!-- v2 tier 1: screensaver -->
+    <restriction
+        android:key="screensaver_enabled"
+        android:title="@string/managed_config_screensaver_enabled_title"
+        android:description="@string/managed_config_screensaver_enabled_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
+    <restriction
+        android:key="screensaver_inactivity_enabled"
+        android:title="@string/managed_config_screensaver_inactivity_enabled_title"
+        android:description="@string/managed_config_screensaver_inactivity_enabled_desc"
+        android:restrictionType="bool"
+        android:defaultValue="true" />
+
+    <restriction
+        android:key="screensaver_inactivity_delay"
+        android:title="@string/managed_config_screensaver_delay_title"
+        android:description="@string/managed_config_screensaver_delay_desc"
+        android:restrictionType="string"
+        android:defaultValue="10" />
+
+    <restriction
+        android:key="screensaver_type"
+        android:title="@string/managed_config_screensaver_type_title"
+        android:description="@string/managed_config_screensaver_type_desc"
+        android:restrictionType="choice"
+        android:entries="@array/screensaver_type_entries"
+        android:entryValues="@array/screensaver_type_values"
+        android:defaultValue="dim" />
+
+    <restriction
+        android:key="screensaver_url"
+        android:title="@string/managed_config_screensaver_url_title"
+        android:description="@string/managed_config_screensaver_url_desc"
         android:restrictionType="string" />
 
 </restrictions>

@@ -18,4 +18,40 @@
         <item>external_app</item>
         <item>media_player</item>
     </string-array>
+    <string-array name="external_app_mode_entries">
+        <item>Single external app</item>
+        <item>Multi-app home screen</item>
+    </string-array>
+    <string-array name="external_app_mode_values">
+        <item>single</item>
+        <item>multi</item>
+    </string-array>
+    <string-array name="back_button_mode_entries">
+        <item>Test (stay on FreeKiosk)</item>
+        <item>Timer then relaunch</item>
+        <item>Immediate relaunch</item>
+    </string-array>
+    <string-array name="back_button_mode_values">
+        <item>test</item>
+        <item>timer</item>
+        <item>immediate</item>
+    </string-array>
+    <string-array name="return_mode_entries">
+        <item>Tap anywhere</item>
+        <item>Return button only</item>
+    </string-array>
+    <string-array name="return_mode_values">
+        <item>tap_anywhere</item>
+        <item>button</item>
+    </string-array>
+    <string-array name="screensaver_type_entries">
+        <item>Dim screen</item>
+        <item>URL</item>
+        <item>Video playlist</item>
+    </string-array>
+    <string-array name="screensaver_type_values">
+        <item>dim</item>
+        <item>url</item>
+        <item>video</item>
+    </string-array>
 </resources>

@@ -268,4 +268,11 @@
         android:description="@string/managed_config_screensaver_url_desc"
         android:restrictionType="string" />
 
+    <restriction
+        android:key="screensaver_lock_screen"
+        android:title="@string/managed_config_screensaver_lock_screen_title"
+        android:description="@string/managed_config_screensaver_lock_screen_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+
 </restrictions>

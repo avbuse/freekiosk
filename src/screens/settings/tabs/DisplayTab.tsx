@@ -93,6 +93,8 @@ interface DisplayTabProps {
   onScreensaverVideoItemsChange: (items: MediaItem[]) => void;
   screensaverVideoLoop: boolean;
   onScreensaverVideoLoopChange: (value: boolean) => void;
+  screensaverLockScreen: boolean;
+  onScreensaverLockScreenChange: (value: boolean) => void;
   onPickScreensaverMedia: (type: 'video' | 'image' | 'any') => void;
   pickingScreensaverMedia: boolean;
 
@@ -178,6 +180,8 @@ const DisplayTab: React.FC<DisplayTabProps> = ({
   onScreensaverVideoItemsChange,
   screensaverVideoLoop,
   onScreensaverVideoLoopChange,
+  screensaverLockScreen,
+  onScreensaverLockScreenChange,
   onPickScreensaverMedia,
   pickingScreensaverMedia,
   motionEnabled,
@@ -396,6 +400,13 @@ const DisplayTab: React.FC<DisplayTabProps> = ({
 
           {screensaverEnabled && (
             <>
+              <SettingsSwitch
+                label="Lock Screen on Screensaver"
+                hint="Lock the device when the screensaver activates (requires device owner or accessibility service)"
+                value={screensaverLockScreen}
+                onValueChange={onScreensaverLockScreenChange}
+              />
+
               {/* Screensaver Style (dim / url / video) */}
               <View style={styles.subSection}>
                 <Text style={styles.subSectionTitle}>Screensaver Style</Text>

@@ -46,6 +46,7 @@ export const MANAGED_CONFIG_BOOL_KEYS = [
   'disable_user_zoom',
   'screensaver_enabled',
   'screensaver_inactivity_enabled',
+  'screensaver_lock_screen',
 ] as const;
 
 export const MANAGED_CONFIG_STRING_KEYS = [
@@ -396,6 +397,11 @@ export const MANAGED_CONFIG_REGISTRY: ManagedConfigFieldDefinition[] = [
     key: 'screensaver_inactivity_enabled',
     type: 'bool',
     apply: (raw) => applyBool(raw, StorageService.saveScreensaverInactivityEnabled),
+  },
+  {
+    key: 'screensaver_lock_screen',
+    type: 'bool',
+    apply: (raw) => applyBool(raw, StorageService.saveScreensaverLockScreen),
   },
   {
     key: 'screensaver_inactivity_delay',

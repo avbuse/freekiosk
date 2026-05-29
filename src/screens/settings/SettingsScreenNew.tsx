@@ -96,6 +96,7 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const [screensaverUrl, setScreensaverUrl] = useState<string>('');
   const [screensaverVideoItems, setScreensaverVideoItems] = useState<MediaItem[]>([]);
   const [screensaverVideoLoop, setScreensaverVideoLoop] = useState<boolean>(true);
+  const [screensaverLockScreen, setScreensaverLockScreen] = useState<boolean>(false);
   const [pickingScreensaverMedia, setPickingScreensaverMedia] = useState<boolean>(false);
   const [defaultBrightness, setDefaultBrightness] = useState<number>(0.5);
   const [certificates, setCertificates] = useState<CertificateInfo[]>([]);
@@ -424,6 +425,7 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
     const savedScreensaverUrl = await StorageService.getScreensaverUrl();
     const savedScreensaverVideoItems = await StorageService.getScreensaverVideoItems<MediaItem>();
     const savedScreensaverVideoLoop = await StorageService.getScreensaverVideoLoop();
+    const savedScreensaverLockScreen = await StorageService.getScreensaverLockScreen();
     const hasPinConfigured = await hasSecurePin();
     
     setIsPinConfigured(hasPinConfigured);
@@ -452,6 +454,7 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
     setScreensaverUrl(savedScreensaverUrl);
     setScreensaverVideoItems(savedScreensaverVideoItems);
     setScreensaverVideoLoop(savedScreensaverVideoLoop);
+    setScreensaverLockScreen(savedScreensaverLockScreen);
 
     // Detect available cameras (first attempt — may return [] on slow SoCs before
     // ProcessCameraProvider resolves; the CameraDevicesChanged listener handles the retry)
@@ -1208,6 +1211,7 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
     await StorageService.saveScreensaverUrl(screensaverUrl);
     await StorageService.saveScreensaverVideoItems(screensaverVideoItems);
     await StorageService.saveScreensaverVideoLoop(screensaverVideoLoop);
+    await StorageService.saveScreensaverLockScreen(screensaverLockScreen);
 
     if (displayMode === 'webview' || displayMode === 'media_player') {
       await StorageService.saveAutoReload(displayMode === 'webview' ? autoReload : false);
@@ -1796,6 +1800,8 @@ const SettingsScreenNew: React.FC<SettingsScreenProps> = ({ navigation }) => {
             onScreensaverVideoItemsChange={setScreensaverVideoItems}
             screensaverVideoLoop={screensaverVideoLoop}
             onScreensaverVideoLoopChange={setScreensaverVideoLoop}
+            screensaverLockScreen={screensaverLockScreen}
+            onScreensaverLockScreenChange={setScreensaverLockScreen}
             onPickScreensaverMedia={handlePickScreensaverMediaFromDevice}
             pickingScreensaverMedia={pickingScreensaverMedia}
             inactivityDelay={inactivityDelay}

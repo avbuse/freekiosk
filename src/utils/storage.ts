@@ -23,6 +23,7 @@ const KEYS = {
   SCREENSAVER_URL: '@screensaver_url',
   SCREENSAVER_VIDEO_ITEMS: '@screensaver_video_items',
   SCREENSAVER_VIDEO_LOOP: '@screensaver_video_loop',
+  SCREENSAVER_LOCK_SCREEN: '@screensaver_lock_screen',
   DEFAULT_BRIGHTNESS: '@default_brightness',
   DISPLAY_MODE: '@kiosk_display_mode',
   EXTERNAL_APP_PACKAGE: '@kiosk_external_app_package',
@@ -274,6 +275,7 @@ export const StorageService = {
         KEYS.SCREENSAVER_URL,
         KEYS.SCREENSAVER_VIDEO_ITEMS,
         KEYS.SCREENSAVER_VIDEO_LOOP,
+        KEYS.SCREENSAVER_LOCK_SCREEN,
         KEYS.DEFAULT_BRIGHTNESS,
         KEYS.DISPLAY_MODE,
         KEYS.EXTERNAL_APP_PACKAGE,
@@ -711,6 +713,24 @@ export const StorageService = {
     } catch (error) {
       console.error('Error getting screensaver video loop:', error);
       return true;
+    }
+  },
+
+  saveScreensaverLockScreen: async (value: boolean): Promise<void> => {
+    try {
+      await AsyncStorage.setItem(KEYS.SCREENSAVER_LOCK_SCREEN, JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving screensaver lock screen:', error);
+    }
+  },
+
+  getScreensaverLockScreen: async (): Promise<boolean> => {
+    try {
+      const value = await AsyncStorage.getItem(KEYS.SCREENSAVER_LOCK_SCREEN);
+      return value === null ? false : JSON.parse(value);
+    } catch (error) {
+      console.error('Error getting screensaver lock screen:', error);
+      return false;
     }
   },
 

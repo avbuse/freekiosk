@@ -72,4 +72,6 @@
     <string name="managed_config_screensaver_type_desc">dim, url, or video</string>
     <string name="managed_config_screensaver_url_title">Screensaver URL</string>
     <string name="managed_config_screensaver_url_desc">URL when screensaver type is url</string>
+    <string name="managed_config_screensaver_lock_screen_title">Screensaver lock screen</string>
+    <string name="managed_config_screensaver_lock_screen_desc">Lock the device when the screensaver activates</string>
 </resources>

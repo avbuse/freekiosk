@@ -48,6 +48,7 @@ class ManagedConfigModule(private val reactContext: ReactApplicationContext) :
             "disable_user_zoom",
             "screensaver_enabled",
             "screensaver_inactivity_enabled",
+            "screensaver_lock_screen",
         )
 
         private val STRING_KEYS = listOf(

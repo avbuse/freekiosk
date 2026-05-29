@@ -60,6 +60,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
   const [screensaverUrl, setScreensaverUrl] = useState<string>('');
   const [screensaverVideoItems, setScreensaverVideoItems] = useState<MediaItem[]>([]);
   const [screensaverVideoLoop, setScreensaverVideoLoop] = useState<boolean>(true);
+  const [screensaverLockScreen, setScreensaverLockScreen] = useState<boolean>(false);
   const [inactivityEnabled, setInactivityEnabled] = useState(true);
   const [inactivityDelay, setInactivityDelay] = useState(600000);
   const [motionEnabled, setMotionEnabled] = useState(false);
@@ -156,6 +157,11 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
   // Keep Screen On setting
   const [keepScreenOn, setKeepScreenOn] = useState<boolean>(true);
   const keepScreenOnRef = useRef<boolean>(true);
+  const screensaverLockScreenRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    screensaverLockScreenRef.current = screensaverLockScreen;
+  }, [screensaverLockScreen]);
   
   // Inactivity Return to Home states
   const [inactivityReturnEnabled, setInactivityReturnEnabled] = useState<boolean>(false);
@@ -947,7 +953,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
     if (isScreensaverActive) {
       enableScreensaverEffects();
     }
-  }, [isScreensaverActive, screensaverBrightness, screensaverType]);
+  }, [isScreensaverActive, screensaverBrightness, screensaverType, screensaverLockScreen]);
 
   // External App mode: bring FreeKiosk to foreground when screensaver activates so the full
   // screensaver (dim/URL/video) renders normally in React Native. On dismiss, re-launch the app.
@@ -1429,6 +1435,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
       const savedScreensaverUrl = str(K.SCREENSAVER_URL) ?? '';
       const savedScreensaverVideoItems = jsonParse(K.SCREENSAVER_VIDEO_ITEMS, []) as MediaItem[];
       const savedScreensaverVideoLoop = bool(K.SCREENSAVER_VIDEO_LOOP, true);
+      const savedScreensaverLockScreen = bool(K.SCREENSAVER_LOCK_SCREEN, false);
       const savedStatusBarEnabled = bool(K.STATUS_BAR_ENABLED, false);
       const savedStatusBarOnOverlay = bool(K.STATUS_BAR_ON_OVERLAY, true);
       const savedStatusBarOnReturn = bool(K.STATUS_BAR_ON_RETURN, true);
@@ -1460,6 +1467,8 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
       setScreensaverUrl(savedScreensaverUrl);
       setScreensaverVideoItems(savedScreensaverVideoItems);
       setScreensaverVideoLoop(savedScreensaverVideoLoop);
+      setScreensaverLockScreen(savedScreensaverLockScreen);
+      screensaverLockScreenRef.current = savedScreensaverLockScreen;
       setStatusBarEnabled(savedStatusBarEnabled);
       setStatusBarOnOverlay(savedStatusBarOnOverlay);
       setStatusBarOnReturn(savedStatusBarOnReturn);
@@ -1888,7 +1897,18 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
 
   // Re-apply settings when Intune/MDM pushes an updated app configuration policy
   useEffect(() => {
-    if (!managedConfigEmitter) return;
+    const pendingConfigListener = DeviceEventEmitter.addListener(
+      'pendingConfigChanged',
+      async () => {
+        console.log('[KioskScreen] Pending quick settings received, reloading...');
+        await loadSettingsRef.current();
+      },
+    );
+
+    if (!managedConfigEmitter) {
+      return () => pendingConfigListener.remove();
+    }
+
     const subscription = managedConfigEmitter.addListener(
       MANAGED_CONFIG_CHANGED_EVENT,
       async (config: ManagedConfigurationMap) => {
@@ -1906,7 +1926,10 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
         }
       },
     );
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+      pendingConfigListener.remove();
+    };
   }, []);
 
   const resetTimer = () => {
@@ -2187,6 +2210,15 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
   }, [displayMode, navigation, resetTimer, clearTimer, markUserInteraction, returnTapCount, returnTapTimeout, defaultBrightness, TAP_PROXIMITY_RADIUS, exitScheduledSleep]);
 
 
+  const wakeFromScreensaverLock = useCallback(async () => {
+    if (!screensaverLockScreenRef.current) return;
+    try {
+      await KioskModule.turnScreenOn();
+    } catch (error) {
+      console.error('[KioskScreen] Error waking screen after screensaver lock:', error);
+    }
+  }, []);
+
   const onScreensaverTap = useCallback(async () => {
     // If in scheduled sleep and wake on touch is disabled, ignore tap
     if (isScheduledSleepRef.current && !screenSchedulerWakeOnTouchRef.current) {
@@ -2212,6 +2244,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
     }
     
     setIsScreensaverActive(false);
+    await wakeFromScreensaverLock();
     resetTimer();
     // Restore brightness immediately (auto-brightness is handled by its own useEffect)
     if (brightnessManagementRef.current && !autoBrightnessEnabled) {
@@ -2221,7 +2254,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
         console.error('[KioskScreen] Error restoring brightness on tap:', error);
       }
     }
-  }, [resetTimer, defaultBrightness, autoBrightnessEnabled, exitScheduledSleep]);
+  }, [resetTimer, defaultBrightness, autoBrightnessEnabled, exitScheduledSleep, wakeFromScreensaverLock]);
 
   const onMotionDetected = useCallback(async () => {
     // Report motion to API/MQTT
@@ -2254,6 +2287,7 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
     if (isScreensaverActiveRef.current) {
       console.log('[KioskScreen] Motion detected — waking screensaver');
       setIsScreensaverActive(false);
+      await wakeFromScreensaverLock();
       // Restore brightness immediately (auto-brightness is handled by its own useEffect)
       if (brightnessManagementRef.current && !autoBrightnessEnabled) {
         try {
@@ -2265,9 +2299,19 @@ const KioskScreen: React.FC<KioskScreenProps> = ({ navigation }) => {
       // Restart the full inactivity timer
       resetTimer();
     }
-  }, [defaultBrightness, resetTimer, autoBrightnessEnabled]);
+  }, [defaultBrightness, resetTimer, autoBrightnessEnabled, wakeFromScreensaverLock]);
 
   const enableScreensaverEffects = async () => {
+    if (screensaverLockScreenRef.current) {
+      try {
+        await KioskModule.turnScreenOff();
+        console.log('[KioskScreen] Screensaver activated — locked screen');
+      } catch (error) {
+        console.error('[KioskScreen] Error locking screen for screensaver:', error);
+      }
+      return;
+    }
+
     // Content modes (URL/video) keep the current brightness so the user can see the content
     if (screensaverType !== 'dim') return;
     // In external_app mode, bringToFront() brings FreeKiosk to the foreground first,

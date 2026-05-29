@@ -95,6 +95,11 @@ class MainActivity : ReactActivity() {
     // Register volume change receiver to track volume changes
     registerVolumeChangeReceiver()
 
+    // Handle quick settings updates (no PIN required) before full ADB config
+    if (handleQuickSettingsExtras(intent)) {
+      return
+    }
+
     // Handle ADB configuration - if config applied, app will restart
     if (handleAdbConfig(intent)) {
       return  // Exit - app restarting with new config
@@ -139,6 +144,11 @@ class MainActivity : ReactActivity() {
     super.onNewIntent(intent)
     setIntent(intent) // Important: update the intent
     
+    // Handle quick settings updates (no PIN required) before full ADB config
+    if (handleQuickSettingsExtras(intent)) {
+      return
+    }
+
     // Handle ADB config on new intent too (when app is already running)
     // If returns true, the app will restart and we should not continue
     if (handleAdbConfig(intent)) {
@@ -935,6 +945,52 @@ class MainActivity : ReactActivity() {
    * 
    * @return true if config was applied and app will restart, false otherwise
    */
+  private fun handleQuickSettingsExtras(intent: Intent?): Boolean {
+    if (intent == null) return false
+
+    // Full ADB config intents use handleAdbConfig instead
+    if (intent.getStringExtra("lock_package") != null ||
+        intent.getStringExtra("url") != null ||
+        intent.getStringExtra("config") != null ||
+        intent.getStringExtra("mqtt_broker_url") != null ||
+        intent.getStringExtra("pin") != null) {
+      return false
+    }
+
+    val quickKeys = listOf(
+      "screensaver_lock_screen",
+      "screensaver_enabled",
+      "screensaver_delay",
+      "screensaver_brightness",
+    )
+    val hasQuickExtra = quickKeys.any { intent.hasExtra(it) }
+    if (!hasQuickExtra) return false
+
+    val pendingConfig = getSharedPreferences("FreeKioskPendingConfig", Context.MODE_PRIVATE)
+    val editor = pendingConfig.edit()
+    editor.clear()
+
+    val keyMapping = mapOf(
+      "screensaver_lock_screen" to "@screensaver_lock_screen",
+      "screensaver_enabled" to "@screensaver_enabled",
+      "screensaver_delay" to "@screensaver_inactivity_delay",
+      "screensaver_brightness" to "@screensaver_brightness",
+    )
+
+    for ((jsonKey, storageKey) in keyMapping) {
+      intent.getStringExtra(jsonKey)?.let { value ->
+        editor.putString(storageKey, value)
+      }
+    }
+
+    editor.putBoolean("has_pending_config", true)
+    editor.commit()
+
+    android.util.Log.i("FreeKiosk-ADB", "Quick settings saved to pending config")
+    KioskModule.sendEventFromNative("pendingConfigChanged", null)
+    return false
+  }
+
   private fun handleAdbConfig(intent: Intent?): Boolean {
     if (intent == null) return false
     
@@ -1052,6 +1108,10 @@ class MainActivity : ReactActivity() {
     
     intent.getStringExtra("screensaver_enabled")?.let {
       editor.putString("@screensaver_enabled", it)
+    }
+
+    intent.getStringExtra("screensaver_lock_screen")?.let {
+      editor.putString("@screensaver_lock_screen", it)
     }
     
     intent.getStringExtra("auto_relaunch")?.let {
@@ -1339,6 +1399,7 @@ class MainActivity : ReactActivity() {
       "auto_launch" to "@kiosk_auto_launch",
       "auto_relaunch" to "@kiosk_auto_relaunch_app",
       "screensaver_enabled" to "@screensaver_enabled",
+      "screensaver_lock_screen" to "@screensaver_lock_screen",
       "screensaver_delay" to "@screensaver_inactivity_delay",
       "screensaver_brightness" to "@screensaver_brightness",
       "status_bar_enabled" to "@kiosk_status_bar_enabled",

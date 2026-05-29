@@ -28,6 +28,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import Icon from '../components/Icon';
 import { revokeSettingsAccess } from '../utils/authState';
+import { getManagedConfiguration } from '../utils/ManagedConfigModule';
+import { applyManagedConfiguration } from '../utils/managedConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { HttpServerModule } = NativeModules;

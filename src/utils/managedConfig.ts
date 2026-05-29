@@ -1,5 +1,6 @@
 import { StorageService } from './storage';
 import { saveSecurePin, hasSecurePin } from './secureStorage';
+import KioskModule from './KioskModule';
 import type { ManagedConfigurationMap } from './ManagedConfigModule';
 
 export type ManagedConfigApplyResult = {
@@ -33,6 +34,15 @@ export async function applyManagedConfiguration(
   if (config.auto_launch != null) {
     await StorageService.saveAutoLaunch(config.auto_launch);
     appliedKeys.push('auto_launch');
+    try {
+      if (config.auto_launch) {
+        await KioskModule.enableAutoLaunch();
+      } else {
+        await KioskModule.disableAutoLaunch();
+      }
+    } catch (error) {
+      console.warn('[ManagedConfig] Failed to sync BootReceiver with auto_launch:', error);
+    }
   }
 
   if (config.pin_mode === 'numeric' || config.pin_mode === 'alphanumeric') {

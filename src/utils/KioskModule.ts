@@ -33,6 +33,9 @@ interface KioskModuleInterface {
   // Pending ADB config (SharedPreferences bridge)
   getPendingAdbConfig(): Promise<Record<string, string> | null>;
   clearPendingAdbConfig(): Promise<boolean>;
+  // Boot on device startup (enables BootReceiver in PackageManager)
+  enableAutoLaunch(): Promise<boolean>;
+  disableAutoLaunch(): Promise<boolean>;
   // Open native Android settings
   openAndroidSettings(settingsPage?: string | null): Promise<boolean>;
   // Bring FreeKiosk's activity to foreground (used when screensaver activates in External App mode)

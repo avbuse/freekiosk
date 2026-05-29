@@ -152,7 +152,7 @@ const PinInput: React.FC<PinInputProps> = ({ onSuccess }) => {
             onChangeText={handlePinChange}
             secureTextEntry={true}
             keyboardType={pinMode === 'alphanumeric' ? 'default' : 'numeric'}
-            maxLength={pinMode === 'alphanumeric' ? undefined : 6}
+            maxLength={getMaxPinLength(pinMode)}
             placeholder={pinMode === 'alphanumeric' ? 'Enter password' : '••••'}
             placeholderTextColor="#999999"
             autoFocus

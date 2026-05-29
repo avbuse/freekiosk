@@ -25,6 +25,7 @@ import type { MediaItem, MediaFitMode } from '../../../types/mediaPlayer';
 import { generateMediaItemId, detectMediaType, isLocalMedia, getMediaDisplayName } from '../../../types/mediaPlayer';
 import FilePickerModule from '../../../utils/FilePickerModule';
 import type { PickedFile } from '../../../utils/FilePickerModule';
+import { MIN_PIN_LENGTH, getMaxPinLength } from '../../../constants/pin';
 
 interface GeneralTabProps {
   // Display mode
@@ -818,7 +819,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
       <SettingsSection title="Password" icon="pin">
         <SettingsSwitch
           label="Advanced Password Mode"
-          hint="Enable alphanumeric passwords with special characters. Disable for numeric PIN only (4-6 digits)."
+          hint={`Enable alphanumeric passwords with special characters. Disable for numeric PIN only (${MIN_PIN_LENGTH}-${getMaxPinLength('numeric')} digits).`}
           value={pinMode === 'alphanumeric'}
           onValueChange={(enabled) => onPinModeChange(enabled ? 'alphanumeric' : 'numeric')}
         />
@@ -830,7 +831,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
           placeholder={isPinConfigured && !pinModeChanged ? '••••' : '1234'}
           keyboardType={pinMode === 'alphanumeric' ? 'default' : 'numeric'}
           secureTextEntry
-          maxLength={pinMode === 'alphanumeric' ? undefined : 6}
+          maxLength={getMaxPinLength(pinMode)}
           autoCapitalize={pinMode === 'alphanumeric' ? 'none' : undefined}
           error={pinModeChanged && !pin ? '⚠️ New password required after mode change' : undefined}
           hint={pinModeChanged

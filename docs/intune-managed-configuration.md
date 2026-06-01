@@ -34,7 +34,7 @@ To add a new MDM key: extend the registry, then mirror the key in `app_restricti
 | `pin_mode` | choice | `numeric` or `alphanumeric` |
 | `display_mode` | choice | `webview`, `external_app`, or `media_player` |
 | `lock_package` | string | External app package when `display_mode` is `external_app` |
-| `pin` | string | Initial PIN only if none configured (see PIN security) |
+| `pin` | string | Sets or updates kiosk PIN when policy applies (see PIN security) |
 
 ### External app
 
@@ -114,9 +114,11 @@ ADB pending config is applied **before** managed configuration on each `loadSett
 
 ## PIN security
 
-- Prefer setting the PIN once via [ADB provisioning](adb-configuration.md), not Intune policy
-- If `pin` is in the policy, it is applied **only when no PIN exists yet**
-- Numeric PINs: 4–20 digits; alphanumeric passwords: 4–20 characters
+- When `pin` is present in the policy, it **overwrites** the device PIN on every apply (startup, policy sync, return from Settings)
+- Use Intune **secret** or **reference** variables for the PIN value in production — do not paste plaintext PINs into policy descriptions
+- Numeric PINs (`pin_mode` = `numeric`): 4–20 digits only
+- Alphanumeric passwords (`pin_mode` = `alphanumeric`): 4–20 characters
+- Changing `pin` in Intune and syncing the device updates PINs on already-provisioned tablets without reinstalling the app
 
 ## Auto-launch on boot
 

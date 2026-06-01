@@ -15,8 +15,8 @@
     <string name="managed_config_display_mode_desc">webview, external_app, or media_player</string>
     <string name="managed_config_lock_package_title">External app package</string>
     <string name="managed_config_lock_package_desc">Package name when display_mode is external_app (e.g. com.example.app)</string>
-    <string name="managed_config_pin_title">Initial PIN/password (optional)</string>
-    <string name="managed_config_pin_desc">Sets PIN on apply only if no PIN is configured yet. Not recommended for production — prefer ADB provisioning for secrets.</string>
+    <string name="managed_config_pin_title">PIN/password</string>
+    <string name="managed_config_pin_desc">Sets or updates the kiosk PIN when the policy is applied (including on devices that already have a PIN). Use Intune secret/reference variables for production.</string>
 
     <string name="managed_config_external_app_mode_title">External app mode</string>
     <string name="managed_config_external_app_mode_desc">single = one locked app; multi = home screen grid</string>

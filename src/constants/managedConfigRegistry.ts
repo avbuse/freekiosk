@@ -5,7 +5,8 @@
  * - android/.../ManagedConfigModule.kt (KNOWN_KEYS / BOOL_KEYS)
  */
 import { StorageService } from '../utils/storage';
-import { saveSecurePin, hasSecurePin } from '../utils/secureStorage';
+import { MIN_PIN_LENGTH, getMaxPinLength } from './pin';
+import { saveSecurePin } from '../utils/secureStorage';
 import KioskModule from '../utils/KioskModule';
 import { createManagedApp, type ManagedApp } from '../types/managedApps';
 import type { ManagedConfigurationMap } from '../utils/ManagedConfigModule';
@@ -22,8 +23,6 @@ export type ManagedConfigFieldType = 'bool' | 'string' | 'int' | 'json';
 export type ManagedConfigFieldDefinition = {
   key: string;
   type: ManagedConfigFieldType;
-  /** If true, value is only applied when no secure PIN exists yet */
-  pinOnce?: boolean;
   apply: (raw: string | boolean | undefined) => Promise<boolean>;
 };
 
@@ -150,15 +149,25 @@ async function applyAutoLaunch(raw: string | boolean | undefined): Promise<boole
   return true;
 }
 
-async function applyPinOnce(raw: string | boolean | undefined): Promise<boolean> {
+async function applyPinFromPolicy(raw: string | boolean | undefined): Promise<boolean> {
   const pin = raw != null ? String(raw) : '';
   if (pin.length === 0) return false;
-  if (await hasSecurePin()) {
-    console.log('[ManagedConfig] PIN in policy ignored — device already has a PIN');
+
+  const pinMode = await StorageService.getPinMode();
+  const maxLen = getMaxPinLength(pinMode);
+  if (pin.length < MIN_PIN_LENGTH || pin.length > maxLen) {
+    console.warn(
+      `[ManagedConfig] PIN rejected: length must be ${MIN_PIN_LENGTH}-${maxLen} (${pinMode} mode)`,
+    );
     return false;
   }
+  if (pinMode === 'numeric' && !/^\d+$/.test(pin)) {
+    console.warn('[ManagedConfig] PIN rejected: numeric mode requires digits only');
+    return false;
+  }
+
   await saveSecurePin(pin);
-  console.log('[ManagedConfig] Initial PIN applied from MDM policy');
+  console.log('[ManagedConfig] PIN updated from MDM policy');
   return true;
 }
 
@@ -217,8 +226,7 @@ export const MANAGED_CONFIG_REGISTRY: ManagedConfigFieldDefinition[] = [
   {
     key: 'pin',
     type: 'string',
-    pinOnce: true,
-    apply: applyPinOnce,
+    apply: applyPinFromPolicy,
   },
   {
     key: 'external_app_mode',

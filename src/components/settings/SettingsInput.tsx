@@ -4,7 +4,15 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, ViewStyle, KeyboardTypeOptions } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ViewStyle,
+  KeyboardTypeOptions,
+  type InputModeOptions,
+} from 'react-native';
 import { Colors, Spacing, Typography } from '../../theme';
 import Icon, { IconName } from '../Icon';
 
@@ -16,6 +24,7 @@ interface SettingsInputProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
+  inputMode?: InputModeOptions;
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   maxLength?: number;
@@ -41,6 +50,7 @@ const SettingsInput: React.FC<SettingsInputProps> = ({
   onChangeText,
   placeholder,
   keyboardType = 'default',
+  inputMode,
   secureTextEntry = false,
   autoCapitalize = 'none',
   maxLength,
@@ -72,6 +82,7 @@ const SettingsInput: React.FC<SettingsInputProps> = ({
         placeholder={placeholder}
         placeholderTextColor={Colors.textHint}
         keyboardType={keyboardType}
+        inputMode={inputMode}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         maxLength={maxLength}

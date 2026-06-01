@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { verifySecurePin, getLockoutStatus, hasSecurePin } from '../utils/secureStorage';
 import { StorageService } from '../utils/storage';
-import { MIN_PIN_LENGTH, getMaxPinLength } from '../constants/pin';
+import { getMaxPinLength, getPinTextInputProps } from '../constants/pin';
 
 interface PinInputProps {
   onSuccess: () => void;
@@ -17,17 +18,24 @@ const PinInput: React.FC<PinInputProps> = ({ onSuccess }) => {
   const [attemptsRemaining, setAttemptsRemaining] = useState<number>(5);
   const [hasPinConfigured, setHasPinConfigured] = useState<boolean>(false);
   const [pinMode, setPinMode] = useState<'numeric' | 'alphanumeric'>('numeric');
+  const [pinModeReady, setPinModeReady] = useState<boolean>(false);
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     checkLockoutStatus();
     checkPinConfiguration();
-    loadPinMode();
     const interval = setInterval(checkLockoutStatus, 1000);
     return () => {
       clearInterval(interval);
     };
   }, []);
+
+  // Reload pin_mode when PIN screen is shown (e.g. after Intune policy sync)
+  useFocusEffect(
+    useCallback(() => {
+      void loadPinMode();
+    }, []),
+  );
 
   // Simple and reliable PIN change handler
   // Uses native secureTextEntry for masking - no manual bullet management
@@ -44,7 +52,10 @@ const PinInput: React.FC<PinInputProps> = ({ onSuccess }) => {
   const loadPinMode = async (): Promise<void> => {
     const mode = await StorageService.getPinMode();
     setPinMode(mode);
+    setPinModeReady(true);
   };
+
+  const pinKeyboard = getPinTextInputProps(pinMode);
 
   const checkPinConfiguration = async (): Promise<void> => {
     const isPinConfigured = await hasSecurePin();
@@ -145,24 +156,30 @@ const PinInput: React.FC<PinInputProps> = ({ onSuccess }) => {
             </View>
           )}
 
+          {!pinModeReady ? (
+            <ActivityIndicator size="large" color="#0066cc" style={styles.modeLoading} />
+          ) : (
           <TextInput
+            key={`pin-input-${pinMode}`}
             ref={inputRef}
-            style={[styles.input, isLoading && styles.inputDisabled]}
+            style={[
+              styles.input,
+              pinMode === 'alphanumeric' && styles.inputAlphanumeric,
+              isLoading && styles.inputDisabled,
+            ]}
             value={pin}
             onChangeText={handlePinChange}
             secureTextEntry={true}
-            keyboardType={pinMode === 'alphanumeric' ? 'default' : 'numeric'}
             maxLength={getMaxPinLength(pinMode)}
             placeholder={pinMode === 'alphanumeric' ? 'Enter password' : '••••'}
             placeholderTextColor="#999999"
             autoFocus
-            autoCapitalize={pinMode === 'alphanumeric' ? 'none' : undefined}
-            autoCorrect={false}
             autoComplete="off"
-            textContentType="none"
             importantForAutofill="no"
             editable={!isLoading && !isLockedOut}
+            {...pinKeyboard}
           />
+          )}
 
           <TouchableOpacity
             style={[styles.button, (isLoading || isLockedOut) && styles.buttonDisabled]}
@@ -200,6 +217,10 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 30,
   },
+  modeLoading: {
+    marginBottom: 20,
+    height: 60,
+  },
   input: {
     width: '80%',
     height: 60,
@@ -213,6 +234,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     letterSpacing: 10,
+  },
+  inputAlphanumeric: {
+    letterSpacing: 0,
+    textAlign: 'left',
+    fontSize: 18,
   },
   inputDisabled: {
     backgroundColor: '#e0e0e0',

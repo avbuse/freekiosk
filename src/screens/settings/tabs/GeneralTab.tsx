@@ -25,7 +25,7 @@ import type { MediaItem, MediaFitMode } from '../../../types/mediaPlayer';
 import { generateMediaItemId, detectMediaType, isLocalMedia, getMediaDisplayName } from '../../../types/mediaPlayer';
 import FilePickerModule from '../../../utils/FilePickerModule';
 import type { PickedFile } from '../../../utils/FilePickerModule';
-import { MIN_PIN_LENGTH, getMaxPinLength } from '../../../constants/pin';
+import { MIN_PIN_LENGTH, getMaxPinLength, getPinTextInputProps } from '../../../constants/pin';
 
 interface GeneralTabProps {
   // Display mode
@@ -825,14 +825,14 @@ const GeneralTab: React.FC<GeneralTabProps> = ({
         />
         
         <SettingsInput
+          key={`settings-pin-${pinMode}`}
           label=""
           value={pin}
           onChangeText={onPinChange}
           placeholder={isPinConfigured && !pinModeChanged ? '••••' : '1234'}
-          keyboardType={pinMode === 'alphanumeric' ? 'default' : 'numeric'}
           secureTextEntry
           maxLength={getMaxPinLength(pinMode)}
-          autoCapitalize={pinMode === 'alphanumeric' ? 'none' : undefined}
+          {...getPinTextInputProps(pinMode)}
           error={pinModeChanged && !pin ? '⚠️ New password required after mode change' : undefined}
           hint={pinModeChanged
             ? '⚠️ Mode changed - You MUST enter a new password'
